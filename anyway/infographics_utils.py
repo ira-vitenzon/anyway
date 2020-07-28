@@ -24,8 +24,8 @@ from concurrent.futures import ThreadPoolExecutor
                  'text': dictionary (Object) - can be empty
                  },
         'meta': {
-				 'rank': int (Integer)
-        		 }
+                 'rank': int (Integer)
+                 }
     }
 """
 
@@ -338,7 +338,10 @@ def count_accidents_by_driver_type(data):
             or vehicle_type in BE_CONST.OTHER_VEHICLES_TYPES
         ):
             driver_types[driver_type_hebrew_dict["other_driver"]] += count
-    return driver_types
+    output = []
+    for driver_type, count in driver_types.items():
+        output.append({'driver_type': driver_type, 'count': count})
+    return output
 
 
 # count of dead and severely injured
