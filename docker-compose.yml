@@ -3,8 +3,8 @@ version: '3'
 services:
   anyway:
     build: .
-    image: anywayteam/anyway:latest
     container_name: anyway
+    image: hasadna/anyway:latest
     ports:
       - "8080:5000"
     environment:
@@ -17,16 +17,26 @@ services:
 
   db:
     build: db_docker
-    image: anywayteam/db:latest
     container_name: db
     environment:
-      - DBRESTORE_AWS_ACCESS_KEY_ID
-      - DBRESTORE_AWS_SECRET_ACCESS_KEY
+      - POSTGRES_PASSWORD=anyway
+      - POSTGRES_USER=anyway
+      - POSTGRES_DB=anyway
+      - DB_DUMP_PATH=/tmp/anyway_public.pgdump
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
       - "9876:5432"
     restart: always
+
+  jupyter:
+    build: jupyter
+    container_name: jupyter
+    ports:
+      - "8888:8888"   
+    volumes: 
+      - "./jupyter/work:/home/jovyan/work"
+    restart: always 
 
 volumes:
   db_data:
