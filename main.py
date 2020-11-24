@@ -10,13 +10,17 @@ import click
 
 def valid_date(date_string):
     DATE_INPUT_FORMAT = "%d-%m-%Y"
+    DATE_INPUT_FORMAT_ALT = "%Y-%m-%dT%H:%M"
     from datetime import datetime
 
     try:
         return datetime.strptime(date_string, DATE_INPUT_FORMAT)
     except ValueError:
-        msg = "Not a valid date: '{0}'.".format(date_string)
-        raise argparse.ArgumentTypeError(msg)
+        try:
+            return datetime.strptime(date_string, DATE_INPUT_FORMAT_ALT)
+        except ValueError:
+            msg = "Not a valid date: '{0}'.".format(date_string)
+            raise argparse.ArgumentTypeError(msg)
 
 
 @click.group()
@@ -34,11 +38,13 @@ def cli():
 )
 @click.option("--debug-js", is_flag=True, help="Don't minify the JavaScript files")
 def testserver(open_server, debug_js):
-    from anyway import app
+    from anyway.app_and_db import app
 
-    logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
-                        level=logging.DEBUG,
-                        datefmt='%Y-%m-%d %H:%M:%S')
+    logging.basicConfig(
+        format="%(asctime)s %(levelname)-8s %(message)s",
+        level=logging.DEBUG,
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
 
     if debug_js:
         app.config["ASSETS_DEBUG"] = True
@@ -88,6 +94,7 @@ def process():
 @click.option("--username", default="")
 @click.option("--password", default="")
 @click.option("--email_search_start_date", type=str, default="")  # format - DD.MM.YYYY
+@click.option("--from_s3", is_flag=True, default=False)
 def cbs(
     specific_folder,
     delete_all,
@@ -99,8 +106,9 @@ def cbs(
     username,
     password,
     email_search_start_date,
+    from_s3,
 ):
-    from anyway.parsers.cbs import main
+    from anyway.parsers.cbs.executor import main
 
     return main(
         specific_folder=specific_folder,
@@ -113,12 +121,14 @@ def cbs(
         username=username,
         password=password,
         email_search_start_date=email_search_start_date,
+        from_s3=from_s3,
     )
 
 
 @process.command()
 def news_flash():
     from anyway.parsers.news_flash import scrape_all
+
     return scrape_all()
 
 
@@ -186,6 +196,30 @@ def schools_with_description(
 
 
 @process.command()
+@click.argument(
+    "schools_description_filepath",
+    type=str,
+    default="static/data/schools/schools_description_2020.xlsx",
+)
+@click.argument(
+    "schools_coordinates_filepath",
+    type=str,
+    default="static/data/schools/schools_coordinates_2020.xlsx",
+)
+@click.option("--batch_size", type=int, default=5000)
+def schools_with_description_2020(
+    schools_description_filepath, schools_coordinates_filepath, batch_size
+):
+    from anyway.parsers.schools_with_description_2020 import parse
+
+    return parse(
+        schools_description_filepath=schools_description_filepath,
+        schools_coordinates_filepath=schools_coordinates_filepath,
+        batch_size=batch_size,
+    )
+
+
+@process.command()
 @click.option(
     "--start_date", default="01-01-2014", type=valid_date, help="The Start Date - format DD-MM-YYYY"
 )
@@ -202,17 +236,37 @@ def injured_around_schools(start_date, end_date, distance, batch_size):
 
 @process.command()
 @click.option(
+    "--from_s3",
+    "-f",
+    is_flag=True,
+    help="get the data from files, instead of waze api",
+)
+@click.option(
     "--start_date", default="01-01-2019", type=valid_date, help="The Start Date - format DD-MM-YYYY"
 )
 @click.option(
     "--end_date", default="01-01-2020", type=valid_date, help="The End Date - format DD-MM-YYYY"
 )
-def waze_data(start_date, end_date):
-    from anyway.parsers.waze.waze_data_parser import waze_parser
+def waze_data(from_s3, start_date, end_date):
+    """
+    Get waze data from existing files or from waze api.
+    Examples for running the script:
 
-    return waze_parser(
-        bucket_name="anyway-hasadna.appspot.com", start_date=start_date, end_date=end_date
-    )
+     - For getting data from waze RTS HTTP API, run:
+       python -m main process waze-data
+
+     - For getting data from the S3 stored json files, run (change the start and end date as you need):
+       python -m main process waze-data --from_s3 --start_date=01-01-2020 --end_date=01-01-2020
+    """
+
+    from anyway.parsers.waze.waze_data_parser import ingest_waze_from_files, ingest_waze_from_api
+
+    if from_s3:
+        return ingest_waze_from_files(
+            bucket_name="anyway-hasadna.appspot.com", start_date=start_date, end_date=end_date
+        )
+    else:
+        return ingest_waze_from_api()
 
 
 @process.command()
@@ -224,13 +278,20 @@ def embedded_reports(filename):
 
 
 @process.command()
-@click.option('--update', 'update', is_flag=True,
-              help='Recalculates the cache (default is False)', default=False)
-@click.option('--no_info', 'info', is_flag=True,
-              help='Prints info on cache (default is True)', default=True)
+@click.option(
+    "--update",
+    "update",
+    is_flag=True,
+    help="Recalculates the cache (default is False)",
+    default=False,
+)
+@click.option(
+    "--no_info", "info", is_flag=True, help="Prints info on cache (default is True)", default=True
+)
 def infographics_data_cache(info, update):
     """Will refresh the infographics data cache"""
     from anyway.parsers.infographics_data_cache_updater import main
+
     return main(update=update, info=info)
 
 
@@ -242,21 +303,21 @@ def preprocess():
 @preprocess.command()
 @click.option("--path", type=str)
 def preprocess_cbs(path):
-    from anyway.parsers.preprocessing_cbs_files import update_cbs_files_names
+    from anyway.parsers.cbs.preprocessing_cbs_files import update_cbs_files_names
 
     return update_cbs_files_names(path)
 
 
 @cli.group()
-def create_views():
+def create_tables():
     pass
 
 
-@create_views.command()
-def cbs_views():
-    from anyway.parsers.cbs import create_views
+@create_tables.command()
+def create_cbs_tables():
+    from anyway.parsers.cbs.executor import create_tables
 
-    return create_views()
+    return create_tables()
 
 
 @cli.group()
@@ -267,7 +328,7 @@ def update_dictionary_tables():
 @update_dictionary_tables.command()
 @click.option("--path", type=str, default="static/data/cbs")
 def update_cbs(path):
-    from anyway.parsers.cbs import update_dictionary_tables
+    from anyway.parsers.cbs.executor import update_dictionary_tables
 
     return update_dictionary_tables(path)
 
@@ -280,7 +341,7 @@ def truncate_dictionary_tables():
 @truncate_dictionary_tables.command()
 @click.option("--path", type=str)
 def truncate_cbs(path):
-    from anyway.parsers.cbs import truncate_dictionary_tables
+    from anyway.parsers.cbs.executor import truncate_dictionary_tables
 
     return truncate_dictionary_tables(path)
 
@@ -289,11 +350,7 @@ def truncate_cbs(path):
 @click.argument("identifiers", nargs=-1)
 def load_discussions(identifiers):
     from anyway.models import DiscussionMarker
-    from flask_sqlalchemy import SQLAlchemy
-    from anyway.utilities import init_flask
-
-    app = init_flask()
-    db = SQLAlchemy(app)
+    from anyway.app_and_db import db
 
     identifiers = identifiers or sys.stdin
 
@@ -343,6 +400,14 @@ def accidents_around_schools(start_date, end_date, distance, output_path):
     return main(
         start_date=start_date, end_date=end_date, distance=distance, output_path=output_path
     )
+
+
+@process.command()
+@click.argument("filename", type=str, default="static/data/casualties/casualties_costs.csv")
+def update_casualties_costs(filename):
+    from anyway.parsers.casualties_costs import parse
+
+    return parse(filename)
 
 
 if __name__ == "__main__":

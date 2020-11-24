@@ -1,8 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 
-from ..models import NewsFlash
-from . import timezones
+from anyway.models import NewsFlash
+from anyway.parsers import timezones
 
 
 def parse_walla(rss_soup, html_soup):
@@ -30,7 +30,7 @@ sites_config = {
         "rss": "https://www.ynet.co.il:443/Integration/StoryRss1854.xml",
         "parser": parse_ynet,
     },
-    "walla": {"rss": "https://rss.walla.co.il:443/feed/22", "parser": parse_walla,},
+    "walla": {"rss": "https://rss.walla.co.il:443/feed/22", "parser": parse_walla},
 }
 
 

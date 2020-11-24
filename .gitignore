@@ -17,7 +17,6 @@ dist
 build
 eggs
 parts
-bin
 var
 sdist
 develop-eggs
@@ -58,3 +57,5 @@ venv
 
 /.vscode
 /.env*
+
+GOOGLE_APPLICATION_CREDENTIALS_KEY.json

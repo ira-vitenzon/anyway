@@ -32,10 +32,10 @@
 <div id="app">
     <div class="navbar navbar-fixed-top">
         <div class="navbar-inner" id="step1Component" style="vertical-align:middle; line-height: 40px; {{ '; display: none' if map_only }}">
-             <div style="float: left;">
+            <!-- <div style="float: left;">
                 <span id="connection_status" style="border-right: 1px solid #ddd; margin-left: 8px; padding-right: 8px; cursor: pointer" onclick="app.loginDialogLoad()">
                     {% if current_user.is_authenticated %}
-                         {{ gettext('Hi') + ' ' + current_user.nickname }}
+                         {{ gettext('Hi') + ' ' + current_user.email }}
                     {% else %}
                        {{ gettext('Login') }}
                     {% endif %}
@@ -51,7 +51,7 @@
                 {% if current_user.is_authenticated %}
                     <img src="../static/img/settings.png" onclick="app.preferencesDialogLoad()" width="16" style="padding-left: 5px; cursor: pointer" />
                 {% endif %}
-            </div>
+            </div>--!>
             <div class="input-group" style="float: left;">
                 <button style="margin: 0 5px 0 2px;" type="button" class="btn btn-primary btn-xs" onclick="app.LocationSubscriptionDialog()">
                     הרשמה
@@ -229,7 +229,7 @@
             ANYWAY היא הדרך שלנו למנוע את התאונה הבאה. ביחד, נהגים, הולכי רגל, אזרחים ומקבלי החלטות נאבק בתאונות הדרכים.
             <br/>
             <br/>
- ANYWAY מציגה על גבי מפה תאונות דרכים עם נפגעים ע״ב נתוני הלשכה המרכזית לסטטיסטיקה, ונתונים המוזרמים בזמן אמת באדיבות ארגון ״איחוד הצלה״. בהמשך, יתווסף מידע נוסף למפה וכן תתאפשר יכולת לפתח דיונים מבוססי מיקום על פתרונות אפשריים והתארגנות אזרחית. באמצעות ידע זמין, נגיש ושקוף אנו שואפים להעלות את המודעות לנושא תאונות הדרכים ולהעצים את יכולת ההשפעה של כל אחד ואחת על הסביבה הקרובה- הבית, השכונה, בית הספר של הילדים, מקום העבודה ועוד- על ידי פעולה משותפת בקהילה. אנחנו מאמינים שבעזרת ידע ציבורי קיים המוצג באתר יווצרו ידע ותובנות חדשים. שיתוף הידע הזה יאפשר לחברה האזרחית להתארגן לפעולה אקטיבית ולהזרים הצעות, רעיונות והתראות בחזרה אל הרשויות. 
+ANYWAY מציגה על גבי מפה תאונות דרכים עם נפגעים ע״ב נתוני הלשכה המרכזית לסטטיסטיקה, ונתונים המוזרמים בזמן אמת באדיבות ארגון ״איחוד הצלה״. בהמשך, יתווסף מידע נוסףלמפה וכן תתאפשר יכולת לפתח דיונים מבוססי מיקום על פתרונות אפשריים והתארגנות אזרחית. באמצעות ידע זמין, נגישושקוף אנו שואפים להעלות את המודעות לנושא תאונות הדרכים ולהעצים את יכולת ההשפעה של כל אחד ואחת על הסביבההקרובה- הבית, השכונה, בית הספר של הילדים, מקום העבודה ועוד- על ידי פעולה משותפת בקהילה. אנחנו מאמינים שבעזרתידע ציבורי קיים המוצג באתר יווצרו ידע ותובנות חדשים. שיתוף הידע הזה יאפשר לחברה האזרחית להתארגן לפעולהאקטיבית ולהזרים הצעות, רעיונות והתראות בחזרה אל הרשויות.
             <br/>
             <br/>
             ANYWAY הוא חשמביר (פרויקט) הפועל בחסות הסדנא לידע ציבורי ונבנה על ידי מתנדבים.
@@ -463,9 +463,9 @@
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             {% if current_user.is_authenticated %}
-                <h3>{{ gettext('התנתק') }}</h3>
+                <h3>{{ _('log out') }}</h3>
             {% else %}
-                <h3>{{ gettext('התחבר') }}</h3>
+                <h3>{{ _('log in') }}</h3>
             {% endif %}
         </div>
         <div class="modal-body" style="width: 50%; margin: 0 auto;">
@@ -474,7 +474,7 @@
                     <p><b>Error</b>: {{ message }}</p>
                 {% endfor %}
                 {% if current_user.is_authenticated %}
-                    <h2> {{ gettext('Hi') + ' ' + current_user.nickname }}</h2>
+                    <h2> {{ gettext('Hi') + ' ' + current_user.email }}</h2>
                     <a class="btn btn-social-icon btn-facebook" href="{{  url_for('logout') }}">{{ gettext('Logout') }}
                         <span class="fa fa-sign-out"></span>
                     </a>

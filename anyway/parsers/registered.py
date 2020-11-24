@@ -5,21 +5,10 @@ import logging
 import os
 import re
 from datetime import datetime
+from anyway.models import RegisteredVehicle, City
+from anyway.utilities import time_delta, CsvReader, ImporterUI, truncate_tables, decode_hebrew
+from anyway.app_and_db import db
 
-from flask_sqlalchemy import SQLAlchemy
-
-from ..models import RegisteredVehicle, City
-from ..utilities import (
-    init_flask,
-    time_delta,
-    CsvReader,
-    ImporterUI,
-    truncate_tables,
-    decode_hebrew,
-)
-
-app = init_flask()
-db = SQLAlchemy(app)
 
 COLUMN_CITY_NAME_ENG = 0
 COLUMN_CITY_TOTAL_MOTORCYCLE = 1

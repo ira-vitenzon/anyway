@@ -29,7 +29,7 @@ The map is also available at [oway.org.il](https://www.oway.org.il/).
 
 ### ANYWAY Schools Report
 
-At the beginning of one of the school years we created a report of pedestrian [accidents around schools](https://anyway-reports.netlify.app/accidents_around_schools) - this is one simple example of insights that can be extracted from the data that we have.
+At the beginning of one of the school years we created a report of pedestrian [accidents around schools](https://reports.anyway.co.il/accidents_around_schools) - this is one simple example of insights that can be extracted from the data that we have.
 
 
 ### ANYWAY’s Infographics Generator - Our Next Challenge
@@ -68,7 +68,6 @@ Contributing
 
 ## Docker
 We are using DOCKER. See [DOCKER](docs/DOCKER.md)
-For Windows users please first install ubuntu VM. See [UBUNTU_VM_ON_WINDOWS](docs/UBUNTU_VM_ON_WINDOWS.md)
 
 ## Testing
 ### Pylint

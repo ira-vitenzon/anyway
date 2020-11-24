@@ -18,7 +18,6 @@ Read more on the docker [Github project](https://github.com/docker/docker)
 
 Instructions
 -----------------------
-* **For Windows users please first install ubuntu VM**. See [UBUNTU_VM_ON_WINDOWS](UBUNTU_VM_ON_WINDOWS.md)
 
 * Please complete ANYWAY’s [“getting the code” section](https://github.com/hasadna/anyway#getting-the-code) before starting
 
@@ -35,17 +34,38 @@ Instructions
 Otherwise, to build an existing environment with the most updated DB, remove DB volume by running `docker volume rm anyway_db_data`.
 Note - this will delete all of your local DB data!
 
-**5.** Start the container, go to the **anyway** directory and run:
-    `docker-compose up`
-It will take a few minutes until it's done.
+**5.** Anyway images stored on github package, to be able to pull the images you need to login to github using docker login.
+if you already logged in with docker to github source jump to the next step.
 
-**6.** **You're all set!** ANYWAY is up and running with the DB data - connect to http://127.0.0.1:8080
+#### **docker login**
+First, to login to github go to [this link](https://github.com/settings/tokens) of your github account and generate token with `read:packages` permission.
+
+Second, copy the token that you just generate and run docker login command like this when `USERNAME` is your github username, and paste the token when prompt will ask the password.
+```bash
+$ docker login docker.pkg.github.com -u USERNAME 
+```
+
+**6.** Go to the project's root directory and run:
+    `sudo docker-compose up`
+This will start the containers. It will take a few minutes until it's done.
+
+**7.** **You're all set!** ANYWAY is up and running with the DB data - connect to http://127.0.0.1:8080
 Note - you won't see the map since the key works in production.
-If you need to see the map contact atalya via slack to get a developer key.
+If you need to see the map contact atalya via slack to get a developer key.  
+The developer key need to replace the production key in the file /anyway/blob/dev/templates/index.html where you can find: "https://maps.googleapis.com/maps/api/js?key=AIzaSyDUIWsBLkvIUwzLHMHos9qFebyJ63hEG2M&libraries=places,visualization&language=iw" (google maps url)
+So if the developer key is "12345" the new url need to be is: "https://maps.googleapis.com/maps/api/js?key=12345&libraries=places,visualization&language=iw"
 
-**7.** To stop the containers run: `docker-compose down`
+**8.** To stop the containers run: `docker-compose down`
 
-**8.** To restore fresh DB data, delete all existing volumes: `docker-compose down -v` then restart from step 6
+**9.** To restore fresh DB data, delete all existing volumes: `docker-compose down -v` then restart from step 6 
+
+**For Windows:**
+You have two options: 
+Use [WSL](https://docs.microsoft.com/en-us/windows/wsl/about) OR install ubuntu VM (See [UBUNTU_VM_ON_WINDOWS](UBUNTU_VM_ON_WINDOWS.md)).
+For WSL - see also [ubuntu for wsl](https://ubuntu.com/wsl)
+
+Pick one option and continue to the instructions section **For Ubuntu**.
+
 
 **For Ubuntu:**
 
@@ -53,17 +73,30 @@ If you need to see the map contact atalya via slack to get a developer key.
 Otherwise, to build an existing environment with the most updated DB, remove DB volume by running `sudo docker volume rm anyway_db_data`.
 Note - this will delete all of your local DB data!
 
-**5.** Start the container, go to the **anyway** directory and run:
-    `sudo docker-compose up`
-It will take a few minutes until it's done.
+**5.** Anyway images stored on github package, to be able to pull the images you need to login to github using docker login.
+if you already logged in with docker to github source jump to the next step.
 
-**6.** **You're all set!** ANYWAY is up and running with the DB data - connect to http://127.0.0.1:8080
+#### **docker login**
+First, to login to github go to [this link](https://github.com/settings/tokens) of your github account and generate token with `read:packages` permission.
+
+Second, copy the token that you just generate and run docker login command like this when `USERNAME` is your github username, and paste the token when prompt will ask the password.
+```bash
+$ docker login docker.pkg.github.com -u USERNAME 
+```
+
+**6.** Go to the project's root directory and run:
+    `sudo docker-compose up`
+This will start the containers. It will take a few minutes until it's done.
+
+**7.** **You're all set!** ANYWAY is up and running with the DB data - connect to http://127.0.0.1:8080
 Note - you won't see the map since the key works in production.
-If you need to see the map for development email us [anyway@anyway.co.il](mailto:anyway@anyway.co.il) to get a developer key.
+If you need to see the map for development email us [anyway@anyway.co.il](mailto:anyway@anyway.co.il) to get a developer key.  
+The developer key need to replace the production key in the file /anyway/blob/dev/templates/index.html where you can find: "https://maps.googleapis.com/maps/api/js?key=AIzaSyDUIWsBLkvIUwzLHMHos9qFebyJ63hEG2M&libraries=places,visualization&language=iw" (google maps url)
+So if the developer key is "12345" the new url need to be is: "https://maps.googleapis.com/maps/api/js?key=12345&libraries=places,visualization&language=iw"
 
 **7.** To stop the containers run: `sudo docker-compose down`
 
-**8.** To restore fresh DB data, delete all existing volumes: `docker-compose down -v` then restart from step 6
+**8.** To restore fresh DB data, delete all existing volumes: `docker-compose down -v` then restart from step 7
 
 ## Additional Docker commands
 Use `sudo` before each docker commands if you are using ubuntu.

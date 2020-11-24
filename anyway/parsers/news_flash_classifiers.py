@@ -62,6 +62,11 @@ def classify_tweets(text):
     )
 
 
+def classify_organization(source):
+    source_to_organization_mapping = {"twitter": "מד״א", "ynet": "ynet", "walla": "וואלה"}
+    return source_to_organization_mapping.get(source, source)
+
+
 def classify_rss(text):
     """
     classify ynet news flash for news flash about car accidents and others
@@ -97,6 +102,8 @@ def classify_rss(text):
         "התנגש",
         "התהפך",
         "התהפכ",
+        "החליק",
+        "החלק",
     ]
     shooting_words = [" ירי ", " ירייה ", " יריות "]
     shooting_startswith = [" ירי", " ירייה", " יריות"]
