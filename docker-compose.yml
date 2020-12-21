@@ -27,6 +27,8 @@ services:
     image: docker.pkg.github.com/hasadna/anyway/db:latest
     container_name: db
     environment:
+      - DBRESTORE_AWS_ACCESS_KEY_ID
+      - DBRESTORE_AWS_SECRET_ACCESS_KEY
       - POSTGRES_PASSWORD=anyway
       - POSTGRES_USER=anyway
       - POSTGRES_DB=anyway
